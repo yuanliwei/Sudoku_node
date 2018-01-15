@@ -16,18 +16,56 @@ class App {
     const {Neuron, Layer, Network, Trainer, Architect } = synaptic
     this.net = Network.fromJSON(netData)
     var canvas = this.canvas = document.createElement('canvas')
+    var canvas2 = this.canvas2 = document.createElement('canvas')
+    canvas2.style.position = "absolute"
+    canvas2.style.bottom = '0px'
+    canvas2.style.right = '0px'
+    canvas2.width = 800
+    canvas2.height = 200
     var g = this.g = canvas.getContext('2d')
     window.g = g
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
     document.body.append(canvas)
+    document.body.append(canvas2)
+    this.ct = new Chart(canvas2, {
+      type: 'line',
+      data:{
+        labels:[],
+        datasets:[{
+          backgroundColor: '#f4acbb',
+          borderColor: '#fc587c',
+          label:'学习误差',
+          data:[],
+          fill: 'start'
+        }]
+      },
+      options: {
+        responsive: true,
+        title:{
+          display:true,
+          text:'Min and Max Settings'
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: 1
+            }
+          }]
+        }
+      }
+    })
+    this.ct.data.labels = '123456789'.split('')
+    this.ct.data.datasets[0].data = '000000000'.split('')
+    this.ct.update()
     var img = this.img = new Image()
     img.onload = ()=>{
       this.drawImg()
       this.analysis()
       this.drawButtons()
     }
-    // img.src = './adb.png'
+    // img.src = './train_data/001.png'
     img.src = '/capture'
 
     // var change = ()=>{
@@ -74,12 +112,12 @@ class App {
         s+= this.getNumIn(i,j)
       }
     }
-
     var puzzleText = s.replace(/0/g,'.')
     console.log(puzzleText);
     question = puzzleText
     var sol = search(parse_grid(puzzleText))
     console.log(sol);
+    if(steps.length==0) return
     var keys = {}
     steps.reverse()
     var temArr = []
@@ -101,6 +139,26 @@ class App {
       this.appendStep(ss, step)
     }
     this.GET('/steps?steps='+JSON.stringify(ss))
+
+    var time = temArr.length * 1.45 * 1000
+    setTimeout(()=>{
+      console.log('time out 1');
+      var ss = []
+      var btn = this.getNumberPosition(8)
+      ss.push(btn)
+      this.GET('/steps?steps='+JSON.stringify(ss))
+      setTimeout(()=>{
+        var ss = []
+        var btn = this.getTargetPosition(8,5)
+        ss.push(btn)
+        this.GET('/steps?steps='+JSON.stringify(ss))
+        console.log('time out 2');
+        setTimeout(()=>{
+          console.log('time out 3');
+          img.src = '/capture?'+Math.random()
+        }, 4000)
+      },3000)
+    }, time)
 
     var ff = ()=>{
       var step = temArr.shift()
@@ -141,6 +199,8 @@ class App {
     var out = net.activate(sample.data)
     for (var i = 0; i < out.length; i++) {
       if(out[i]>0.1){
+        this.ct.data.datasets[0].data[i] = out[i]
+        this.ct.update()
         return i + 1
       }
     }
