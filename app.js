@@ -1,3 +1,26 @@
+/*
+
+adb shell monkey --port 1080
+adb forward tcp:1080 tcp:1080
+telnet 127.0.0.1 1080
+
+adb forward --remove tcp:1080
+adb forward --list
+
+sleep 300
+quit
+done
+type string
+press keycode
+tap x y
+wake
+flip [open|close]
+trackball dx dy
+touch [down|up|move] x y
+keycode [down|up] keycode
+
+*/
+
 var PORT = 3000;
 
 const { exec } = require('child_process');
@@ -25,7 +48,8 @@ function steps(req, resp) {
   for (var i = 0; i < steps.length; i++) {
     var p = steps[i]
     console.log(`input tap ${p.x} ${p.y}`);
-    process.stdin.write(`input tap ${p.x} ${p.y}\n`)
+    // process.stdin.write(`input tap ${p.x} ${p.y}\n`)
+    tap(p.x, p.y)
   }
   resp.writeHead(200, { 'Content-Type': 'text/plain' });
   resp.write('ok');
@@ -115,4 +139,36 @@ var mine = {
 server.listen(PORT);
 console.log("Server runing at port: " + PORT + ".");
 
-exec('explorer "http://localhost:3000/"')
+// exec('explorer "http://localhost:3000/"')
+
+const net = require('net');
+// let HOST = '127.0.0.1'
+let HOST = '192.168.40.212'
+let PORTC = 1080
+
+let client = new net.Socket()
+client.connect(PORTC, HOST, function() {
+    console.log('CONNECTED TO: ' + HOST + ':' + PORT);
+    // let time = Date.now()
+    // for (var i = 0; i < 300000; i++) {
+    //   // 1080 1920
+    //   // tap 780 580
+    //   // tap(780, 580)
+    //   down(540, 900)
+    //   up(500 + 80*Math.random(), 850 + 100*Math.random())
+    //   down(540, 900)
+    //   up(500 + 80*Math.random(), 850 + 100*Math.random())
+    // }
+});
+
+client.on('data', function(data) {
+    console.log('DATA: ' + data);
+});
+
+client.on('close', function() {
+    console.log('Connection closed');
+});
+
+function tap(x, y) {
+  client.write(`tap ${parseInt(x)} ${parseInt(y)}\n`);
+}

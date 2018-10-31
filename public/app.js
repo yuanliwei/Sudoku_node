@@ -1,16 +1,26 @@
 class App {
   constructor() {
+
+    let btn = document.createElement('button')
+    btn.innerText = 'capture'
+    btn.onclick = ()=>{
+      img.src = '/capture?'+Math.random()
+    }
+    window.onkeydown = ()=>{
+      img.src = '/capture?'+Math.random()
+    }
+
     this.scale = 0.3
     this.ddd_x1 = 2
     this.ddd_y1 = 112
     this.ddd_y2 = 34
     this.ddd_x2 = 34
     this.board_x1 = 2
-    this.board_y1 = 112
+    this.board_y1 = 160
     this.board_y2 = 320
     this.board_x2 = 320
     this.btn_x1 = 0
-    this.btn_y1 = 510
+    this.btn_y1 = 585
     this.btn_x2 = 320
     this.btn_y2 = 46
     const {Neuron, Layer, Network, Trainer, Architect } = synaptic
@@ -27,7 +37,7 @@ class App {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
     document.body.append(canvas)
-    document.body.append(canvas2)
+    // document.body.append(canvas2)
     this.ct = new Chart(canvas2, {
       type: 'line',
       data:{
@@ -68,23 +78,23 @@ class App {
     // img.src = './train_data/001.png'
     img.src = '/capture'
 
-    // var change = ()=>{
-    //   this.drawImg()
-    //   this.drawButtons()
-    // }
-    // var gui = new dat.GUI();
-    // gui.add(this, 'ddd_x1', 0, 900).onChange(change);
-    // gui.add(this, 'ddd_y1', 0, 900).onChange(change);
-    // gui.add(this, 'ddd_y2', 0, 60).onChange(change);
-    // gui.add(this, 'ddd_x2', 0, 60).onChange(change);
-    // gui.add(this, 'board_x1', 0, 900).onChange(change);
-    // gui.add(this, 'board_y1', 0, 900).onChange(change);
-    // gui.add(this, 'board_y2', 0, 960).onChange(change);
-    // gui.add(this, 'board_x2', 0, 960).onChange(change);
-    // gui.add(this, 'btn_x1', 0, 900).onChange(change);
-    // gui.add(this, 'btn_y1', 0, 900).onChange(change);
-    // gui.add(this, 'btn_x2', 0, 960).onChange(change);
-    // gui.add(this, 'btn_y2', 0, 960).onChange(change);
+    var change = ()=>{
+      this.drawImg()
+      this.drawButtons()
+    }
+    var gui = new dat.GUI();
+    gui.add(this, 'ddd_x1', 0, 900).onChange(change);
+    gui.add(this, 'ddd_y1', 0, 900).onChange(change);
+    gui.add(this, 'ddd_y2', 0, 60).onChange(change);
+    gui.add(this, 'ddd_x2', 0, 60).onChange(change);
+    gui.add(this, 'board_x1', 0, 900).onChange(change);
+    gui.add(this, 'board_y1', 0, 900).onChange(change);
+    gui.add(this, 'board_y2', 0, 960).onChange(change);
+    gui.add(this, 'board_x2', 0, 960).onChange(change);
+    gui.add(this, 'btn_x1', 0, 900).onChange(change);
+    gui.add(this, 'btn_y1', 0, 900).onChange(change);
+    gui.add(this, 'btn_x2', 0, 960).onChange(change);
+    gui.add(this, 'btn_y2', 0, 960).onChange(change);
   }
 
   drawImg(){
@@ -140,25 +150,25 @@ class App {
     }
     this.GET('/steps?steps='+JSON.stringify(ss))
 
-    var time = temArr.length * 1.45 * 1000
-    setTimeout(()=>{
-      console.log('time out 1');
-      var ss = []
-      var btn = this.getNumberPosition(8)
-      ss.push(btn)
-      this.GET('/steps?steps='+JSON.stringify(ss))
-      setTimeout(()=>{
-        var ss = []
-        var btn = this.getTargetPosition(8,5)
-        ss.push(btn)
-        this.GET('/steps?steps='+JSON.stringify(ss))
-        console.log('time out 2');
-        setTimeout(()=>{
-          console.log('time out 3');
-          img.src = '/capture?'+Math.random()
-        }, 4000)
-      },3000)
-    }, time)
+    // var time = temArr.length * 1.45 * 1000
+    // setTimeout(()=>{
+    //   console.log('time out 1');
+    //   var ss = []
+    //   var btn = this.getNumberPosition(8)
+    //   ss.push(btn)
+    //   this.GET('/steps?steps='+JSON.stringify(ss))
+    //   setTimeout(()=>{
+    //     var ss = []
+    //     var btn = this.getTargetPosition(8,5)
+    //     ss.push(btn)
+    //     this.GET('/steps?steps='+JSON.stringify(ss))
+    //     console.log('time out 2');
+    //     setTimeout(()=>{
+    //       console.log('time out 3');
+    //       img.src = '/capture?'+Math.random()
+    //     }, 4000)
+    //   },3000)
+    // }, time)
 
     var ff = ()=>{
       var step = temArr.shift()
@@ -198,7 +208,7 @@ class App {
     const {net} = this
     var out = net.activate(sample.data)
     for (var i = 0; i < out.length; i++) {
-      if(out[i]>0.1){
+      if(out[i]>0.5){
         this.ct.data.datasets[0].data[i] = out[i]
         this.ct.update()
         return i + 1
